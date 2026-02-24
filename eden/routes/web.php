@@ -1,12 +1,10 @@
 <?php
 
+use App\Http\Controllers\SmsController;
 use App\Services\TwilioService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use Twilio\TwiML\MessagingResponse;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -28,17 +26,19 @@ Route::get('/test-sms', function(TwilioService $twilio){
     return "SMS sent!";
 });
 
-Route::post('/sms/incoming', function(Request $request){
-    $from = $request->input('From');
-    $body = $request->input('Body');
+Route::post('/sms/incoming', [SmsController::class, 'incoming'])->name('sms.incoming');
 
-    Log::info("Received SMS from $from: $body");
-    Log::info("Replying to $from: You said $body");
+// Route::post('/sms/incoming', function(Request $request){
+//     $from = $request->input('From');
+//     $body = $request->input('Body');
 
-    $response = new MessagingResponse();
-    $response->message("You said: $body");
+//     Log::info("Received SMS from $from: $body");
+//     Log::info("Replying to $from: You said $body");
 
-    return response($response)->header('Content-Type', 'text/xml');
-});
+//     $response = new MessagingResponse();
+//     $response->message("You said: $body");
+
+//     return response($response)->header('Content-Type', 'text/xml');
+// });
 
 require __DIR__.'/settings.php';
