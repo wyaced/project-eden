@@ -1,0 +1,39 @@
+# version: '3.9'
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: eden_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: eden
+      MYSQL_USER: edenuser
+      MYSQL_PASSWORD: edenpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  eden:
+    build:
+      context: ./eden
+      dockerfile: Dockerfile
+    container_name: eden_app
+    restart: always
+    ports:
+      - "8000:8000"
+      - "5173:5173" # Vite dev
+    volumes:
+      - ./eden:/var/www/html
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_DATABASE: eden
+      DB_USERNAME: edenuser
+      DB_PASSWORD: edenpass
+
+volumes:
+  db_data:
