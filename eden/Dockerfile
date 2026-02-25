@@ -26,4 +26,4 @@ WORKDIR /var/www/html
 
 EXPOSE 8000 5173
 
-CMD sh -c "composer install && npm install && php artisan serve --host=0.0.0.0 --port=8000"
+CMD sh -c "composer install && npm install && npm run build && php artisan serve --host=0.0.0.0 --port=8000"
