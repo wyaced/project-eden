@@ -79,6 +79,12 @@ ngrok http 8000
 
 ### **Running the Project**
 
+* **Run dev server:**
+
+``` bash
+docker exec -it eden_app npm run dev
+```
+
 * **Web interface:** `http://localhost:8000`
 * **React dev server (hot reload):** `http://localhost:5173`
 * **Laravel logs (for SMS replies & demo):**
