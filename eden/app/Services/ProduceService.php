@@ -37,8 +37,12 @@ class ProduceService
         return ['success' => true, 'listing' => $produceListing];
     }
 
-    public function deleteListing(ProduceListing $produceListing)
+    public function deleteListing($id)
     {
+        $produceListing = ProduceListing::find($id);
+        if (!$produceListing) {
+            return ['success' => false];
+        }
         return ['success' => $produceListing->delete()];
     }
 }
