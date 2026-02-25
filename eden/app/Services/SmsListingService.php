@@ -32,19 +32,28 @@ class SmsListingService
 
     public function parseShowCommand($attributes)
     {
-        // Expected format for attributes: <produce> <location: nullable> || by <name>
-        // example: tomatoes Laguna
+        // Expected format for attributes: of <produce: nullable> in <location: nullable> by <name> in <location>
+        // example: of tomatoes in Laguna
         // example: by Juan
-
-        if (in_array('by', $attributes)) {
-            $nameIndex = array_search('by', $attributes) + 1;
-            $showRequest = ['farmer_name' => $attributes[$nameIndex] ?? null];
-        }
+        // example: in Juan
 
         $showRequest = [
-            'produce' => $attributes[0] ?? null,
-            'location' => $attributes[1] ?? null,
+            'produce' => null,
+            'location' => null,
+            'farmer_name' => null,
         ];
+        
+        if (in_array('of', $attributes)) {
+            $showRequest['produce'] = $attributes[array_search('of', $attributes) + 1] ?? null;
+        }
+
+        if (in_array('in', $attributes)) {
+            $showRequest['location'] = $attributes[array_search('in', $attributes) + 1] ?? null;
+        }
+
+        if (in_array('by', $attributes)) {
+            $showRequest['farmer_name'] = $attributes[array_search('by', $attributes) + 1] ?? null;
+        }
 
         return $showRequest;
     }

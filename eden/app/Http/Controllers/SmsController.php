@@ -29,7 +29,28 @@ class SmsController extends Controller
             // example: tomatoes 100kg 20php Laguna listed by Juan
 
             $listingData = $this->smsListingService->parseMakeCommand($from, $attributes);
-            $response = $this->produceService->createListing($listingData);
+            $makeListingResponse = $this->produceService->createListing($listingData);
+
+            if (!$makeListingResponse['success']) {
+                Log::error("Eden: Failed to create listing for farmer $from");
+                Log::error("=== SMS Conversation End ===");
+
+                $response = ['success' => false, 'message' => "Failed to create listing. Please check your command format and try again."];
+
+                return $response;
+            }
+            $listing = $makeListingResponse['listing'];
+            $message = <<<EOT
+            Listing created successfully!
+                Produce: {$listing->produce}
+                Quantity: {$listing->quantity} {$listing->unit}
+                Price per unit: {$listing->price_per_unit}
+                Location: {$listing->location}
+                Farmer Name: {$listing->farmer_name}
+                Farmer Phone: {$listing->farmer_phone}
+            EOT;
+
+            $response = ['success' => true, 'message' => $message];
 
             return $response;
         }
@@ -39,7 +60,27 @@ class SmsController extends Controller
             // example: tomatoes Laguna by Juan
 
             $showRequest = $this->smsListingService->parseShowCommand($attributes);
+            $listings = $this->produceService->showListings($showRequest);
+            $listingsArray = [];
+            foreach ($listings as $listing) {
+                $listingsArray[] = 
+                    <<<EOT
+                    ==================
+                    ID: {$listing->id}
+                    Produce: {$listing->produce}
+                    Quantity: {$listing->quantity} {$listing->unit}
+                    Price per unit: {$listing->price_per_unit}
+                    Location: {$listing->location}
+                    Farmer Name: {$listing->farmer_name}
+                    Farmer Phone: {$listing->farmer_phone}
+                    ==================
+                    EOT;
+            }
+            $message = "Listings: \n" . implode("\n", $listingsArray) . "\nTo request purchase, specify the listing ID";
 
+            $response = ['success' => true, 'message' => $message];
+
+            return $response;
         }
     }
 
@@ -64,22 +105,10 @@ class SmsController extends Controller
         Log::info("$from ($senderName): $body");
 
         if (str_contains($body, 'listing')) {
-            $response = $this->controlListings($from, $tokens['command'], $tokens['attributes']);
-            if (!$response['success']) {
-                Log::error("Eden: Failed to create listing for farmer $from");
-                Log::error("=== SMS Conversation End ===");
-                return;
-            }
-            $listing = $response['listing'];
-            $message = <<<EOT
-            Listing created successfully!
-                Produce: {$listing->produce}
-                Quantity: {$listing->quantity} {$listing->unit}
-                Price per unit: {$listing->price_per_unit}
-                Location: {$listing->location}
-                Farmer Name: {$listing->farmer_name}
-                Farmer Phone: {$listing->farmer_phone}
-            EOT;
+            $listingResponse = $this->controlListings($from, $tokens['command'], $tokens['attributes']);
+
+            $message = $listingResponse['message'] ?? "Sorry, we couldn't process your request. Please check your command format and try again.";
+
             $response = new MessagingResponse();
             $response->message($message);
             foreach (explode("\n", $message) as $line) {
