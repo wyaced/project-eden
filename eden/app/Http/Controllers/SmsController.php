@@ -94,6 +94,14 @@ class SmsController extends Controller
             $updateRequest = $this->smsListingService->parseUpdateCommand($attributes);
 
             $produceListing = ProduceListing::find($updateRequest['id']);
+            if (!$produceListing) {
+                Log::error("Eden: Failed to update ListingID $updateRequest[id] - Listing not found");
+                Log::error("=== SMS Conversation End ===");
+
+                $response = ['success' => false, 'message' => "Failed to update listing. Listing ID $updateRequest[id] not found."];
+
+                return $response;
+            }
 
             $updateListingResponse = $this->produceService->updateListing($produceListing, $updateRequest['data']);
 
@@ -114,6 +122,59 @@ class SmsController extends Controller
                 Location: {$listing->location}
                 Farmer Name: {$listing->farmer_name}
             EOT;
+
+            $response = ['success' => true, 'message' => $message];
+
+            return $response;
+        }
+
+        if ($command === 'delete') {
+            // Expected format for attributes: <listing_id>
+            // example: ListingId 12
+
+            $listingId = $attributes[0] ?? null;
+
+            if (!$listingId) {
+                Log::error("Eden: Failed to delete ListingID $listingId - Missing listing ID");
+                Log::error("=== SMS Conversation End ===");
+
+                $response = ['success' => false, 'message' => "Failed to delete listing. Please specify the listing ID."];
+
+                return $response;
+            }
+
+            $produceListing = ProduceListing::find($listingId);
+
+            if (!$produceListing) {
+                Log::error("Eden: Failed to delete listing for farmer $from - Listing ID $listingId not found");
+                Log::error("=== SMS Conversation End ===");
+
+                $response = ['success' => false, 'message' => "Failed to delete listing. Listing ID $listingId not found."];
+
+                return $response;
+            }
+
+            $message = <<<EOT
+            Deleting ListingID {$listingId}...
+                Produce: {$produceListing->produce}
+                Quantity: {$produceListing->quantity} {$produceListing->unit}
+                Price per unit: {$produceListing->price_per_unit}
+                Location: {$produceListing->location}
+                Farmer Name: {$produceListing->farmer_name}
+            EOT;
+
+            $deleteListingResponse = $this->produceService->deleteListing($produceListing);
+
+            if (!$deleteListingResponse['success']) {
+                Log::error("Eden: Failed to delete listing ID $listingId");
+                Log::error("=== SMS Conversation End ===");
+
+                $response = ['success' => false, 'message' => "Failed to delete listing. Please try again later."];
+
+                return $response;
+            }
+
+            $message = $message . "\nListingID {$listingId} deleted successfully!";
 
             $response = ['success' => true, 'message' => $message];
 

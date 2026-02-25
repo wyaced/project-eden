@@ -36,4 +36,9 @@ class ProduceService
         $produceListing->update($updateRequest);
         return ['success' => true, 'listing' => $produceListing];
     }
+
+    public function deleteListing(ProduceListing $produceListing)
+    {
+        return ['success' => $produceListing->delete()];
+    }
 }
