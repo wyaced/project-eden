@@ -11,6 +11,12 @@ class SmsTransactionRequestService
 {
     protected $transactionRequestService;
 
+    protected String $from;
+    protected ?String $farmerName;
+    protected String $command;
+    protected array $attributes;
+    protected String $strAttributes;
+
     public function __construct(TransactionRequestService $transactionRequestService)
     {
         $this->transactionRequestService = $transactionRequestService;
@@ -33,37 +39,39 @@ class SmsTransactionRequestService
         return $transactionRequestData;
     }
 
-    public function controlTransactionRequests(String $from, String $command, array $attributes)
+    protected function makeTransactionRequest()
     {
-        $farmerName = $attributes[array_search('by', $attributes) + 1] ?? null;
-        $strAttributes = implode(' ', $attributes);
+        // Expected format for attributes: ListingId <listing_id> <UnitQuantity> requested by <name>
+        // example: ListingId 1 50kg requested by Juan
 
-        if ($command === 'make') {
-            // Expected format for attributes: ListingId <listing_id> <UnitQuantity> requested by <name>
-            // example: ListingId 1 50kg requested by Juan
+        $from = $this->from;
+        $farmerName = $this->farmerName;
+        $command = $this->command;
+        $attributes = $this->attributes;
+        $strAttributes = $this->strAttributes;
 
-            Log::info("----------------------------");
-            Log::info("$farmerName: $command TransactionRequest $strAttributes");
-            Log::info("----------------------------");
+        Log::info("----------------------------");
+        Log::info("$farmerName: $command TransactionRequest $strAttributes");
+        Log::info("----------------------------");
 
-            $transactionRequestData = $this->parseMakeCommand($from, $attributes);
-            $listing = ProduceListing::find($transactionRequestData['listing_id']);
+        $transactionRequestData = $this->parseMakeCommand($from, $attributes);
+        $listing = ProduceListing::find($transactionRequestData['listing_id']);
 
-            if (is_null($listing)) {
-                return [
-                    'success' => false,
-                    'message' => "Listing with ID {$transactionRequestData['listing_id']} not found.",
-                ];
-            }
+        if (is_null($listing)) {
+            return [
+                'success' => false,
+                'message' => "Listing with ID {$transactionRequestData['listing_id']} not found.",
+            ];
+        }
 
-            SmsConversation::create([
-                'farmer_phone' => $from,
-                'action' => 'make_transaction_request',
-                'status' => 'pending',
-                'data' => ['transaction_request_data' => $transactionRequestData],
-            ]);
+        SmsConversation::create([
+            'farmer_phone' => $from,
+            'action' => 'make_transaction_request',
+            'status' => 'pending',
+            'data' => ['transaction_request_data' => $transactionRequestData],
+        ]);
 
-            $message = <<<EOT
+        $message = <<<EOT
             Creating TransactionRequest...
                 From: {$transactionRequestData['from']} ({$transactionRequestData['from_phone']})
                 To: {$listing->farmer_name} ({$listing->farmer_phone})
@@ -78,9 +86,23 @@ class SmsTransactionRequestService
             Reply YES or NO.
             EOT;
 
-            $response = ['success' => 'pending', 'message' => $message];
+        $response = ['success' => 'pending', 'message' => $message];
 
-            return $response;
+        return $response;
+    }
+
+    public function controlTransactionRequests(String $from, String $command, array $attributes)
+    {
+        $this->from = $from;
+        $this->farmerName = $attributes[array_search('by', $attributes) + 1] ?? null;
+        $this->command = $command;
+        $this->attributes = $attributes;
+        $this->strAttributes = implode(' ', $attributes);
+
+        if ($command === 'make') {
+            // Expected format for attributes: ListingId <listing_id> <UnitQuantity> requested by <name>
+            // example: ListingId 1 50kg requested by Juan
+            return $this->makeTransactionRequest();
         }
     }
 }

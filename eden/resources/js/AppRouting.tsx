@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AppLayout from "./layouts/app-layout";
-import Home from "@/pages/welcome";
-import Dashboard from "@/pages/DashboardTest";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Dashboard from '@/pages/DashboardTest';
+import Home from '@/pages/welcome';
+import AppLayout from './layouts/app-layout';
 
 export default function AppRouting() {
     return (

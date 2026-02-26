@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::get('/{any}', function () {
     return view('app');
-})->name('home');
+})->where('any', '^(?!api).*$');
 
 require __DIR__.'/settings.php';
