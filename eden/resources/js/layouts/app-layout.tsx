@@ -1,8 +1,16 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import type { AppLayoutProps } from '@/types';
+import { Outlet } from "react-router-dom";
+import AppHeaderLayout from "./app/app-header-layout";
+import AppSidebarLayout from "./app/app-sidebar-layout";
 
-export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
-    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        {children}
-    </AppLayoutTemplate>
-);
+export default function AppLayout() {
+    return (
+        <AppHeaderLayout>
+            <AppSidebarLayout>
+                <div>
+                    <h1>Layout Working</h1>
+                    <Outlet />
+                </div>
+            </AppSidebarLayout>
+        </AppHeaderLayout>
+    );
+}
