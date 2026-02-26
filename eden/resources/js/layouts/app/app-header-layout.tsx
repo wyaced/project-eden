@@ -1,16 +1,10 @@
-import { AppContent } from '@/components/app-content';
-import { AppHeader } from '@/components/app-header';
-import { AppShell } from '@/components/app-shell';
-import type { AppLayoutProps } from '@/types';
+import AppHeader from "@/components/app-header";
 
-export default function AppHeaderLayout({
-    children,
-    breadcrumbs,
-}: AppLayoutProps) {
+export default function AppHeaderLayout({ children }: { children: React.ReactNode }) {
     return (
-        <AppShell>
-            <AppHeader breadcrumbs={breadcrumbs} />
-            <AppContent>{children}</AppContent>
-        </AppShell>
+        <div>
+            <AppHeader />
+            {children}
+        </div>
     );
 }
