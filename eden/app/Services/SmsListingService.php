@@ -169,6 +169,7 @@ class SmsListingService
         Log::info("----------------------------");
 
         $showRequest = $this->parseShowCommand($attributes);
+
         $listings = $this->produceService->showListings($showRequest);
         $listingsArray = [];
         foreach ($listings as $listing) {
@@ -183,6 +184,7 @@ class SmsListingService
             _________________________
             EOT;
         }
+
         $message = "Listings: \n" . implode("\n", $listingsArray) . "\nTo request purchase, specify the listing ID";
 
         $response = ['success' => true, 'message' => $message];

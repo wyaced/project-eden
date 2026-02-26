@@ -71,7 +71,11 @@ class SmsController extends Controller
             'attributes' => array_slice($words, 2) ?? null,
         ];
 
-        if (str_contains($body, 'transactionrequest')) {
+        if (
+            str_contains($body, 'transactionrequest') ||
+            str_contains($body, 'transactionrequests') ||
+            str_contains($body, 'transactionrequestid')
+        ) {
             $transactionRequestResponse = $this->smsTransactionRequestService->controlTransactionRequests($from, $tokens['command'], $tokens['attributes']);
 
             $response = [

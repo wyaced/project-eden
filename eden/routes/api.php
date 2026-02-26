@@ -24,6 +24,9 @@ Route::get('/market-test', function () {
 
 Route::get('/test-sms', function(TwilioService $twilio){
     // Replace with your phone number (must be verified in Twilio trial)
+    // twilio 1
+    // $to = '+18777804236';
+    // twilio 2
     $to = '+18777804236';
     $message = "Hello from Eden hackathon!";
 
