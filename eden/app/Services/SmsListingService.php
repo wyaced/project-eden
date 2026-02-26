@@ -105,10 +105,11 @@ class SmsListingService
         return $updateRequest;
     }
 
-    public function controlListings($from, $command, $attributes)
+    public function controlListings(String $from, String $command, array $attributes)
     {
-        $farmerName = end($attributes) ?? null;
+        $farmerName = $attributes[array_search('by', $attributes) + 1] ?? null;
         $strAttributes = implode(' ', $attributes);
+
         if ($command === 'make') {
             // Expected format for attributes: <produce> <quantity><unit> <price> <location> listed by <name>
             // example: tomatoes 100kg 20php Laguna listed by Juan
@@ -133,8 +134,8 @@ class SmsListingService
             Listing created successfully!
                 ListingID: {$listing->id}
                 Produce: {$listing->produce}
-                Quantity: {$listing->quantity} {$listing->unit}
-                Price per unit: {$listing->price_per_unit}
+                Quantity: {$listing->quantity}{$listing->unit}
+                Price: PHP{$listing->price_per_unit} / {$listing->unit}
                 Location: {$listing->location}
                 Farmer Name: {$listing->farmer_name}
             EOT;
@@ -160,14 +161,14 @@ class SmsListingService
             foreach ($listings as $listing) {
                 $listingsArray[] =
                     <<<EOT
-                    ____________________________
+                    _________________________
                     ID: {$listing->id}
                     Produce: {$listing->produce}
                     Quantity: {$listing->quantity} {$listing->unit}
                     Price per unit: {$listing->price_per_unit}
                     Location: {$listing->location}
                     Farmer Name: {$listing->farmer_name}
-                    ____________________________
+                    _________________________
                     EOT;
             }
             $message = "Listings: \n" . implode("\n", $listingsArray) . "\nTo request purchase, specify the listing ID";

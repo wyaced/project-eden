@@ -33,7 +33,7 @@ export default function Welcome() {
 
   // Axios → Laravel API
   useEffect(() => {
-    api.get<MarketData[]>("/market-test")
+    api.get<MarketData[]>("/api/market-test")
       .then((res) => {
         setData(res.data);
         setLoading(false);

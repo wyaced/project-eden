@@ -6,6 +6,7 @@ use App\Models\SmsConversation;
 use App\Services\ProduceService;
 use App\Services\SmsConversationService;
 use App\Services\SmsListingService;
+use App\Services\SmsTransactionRequestService;
 use App\Services\TwilioService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,21 +18,29 @@ class SmsController extends Controller
     protected $produceService;
     protected $smsListingService;
     protected $smsConversationService;
+    protected $smsTransactionRequestService;
 
     public function __construct(
         TwilioService $twilio,
         ProduceService $produceService,
         SmsListingService $smsListingService,
         SmsConversationService $smsConversationService,
+        SmsTransactionRequestService $smsTransactionRequestService
     ) {
         $this->twilio = $twilio;
         $this->produceService = $produceService;
         $this->smsListingService = $smsListingService;
         $this->smsConversationService = $smsConversationService;
+        $this->smsTransactionRequestService = $smsTransactionRequestService;
     }
 
     public function incoming(Request $request)
     {
+        $response = [
+            'success' => false,
+            'message' => "Invalid request.",
+        ];
+
         $from = $request->input('From');
 
         $body = strtolower($request->input('Body'));
@@ -44,11 +53,7 @@ class SmsController extends Controller
         if (is_null($conversation)) {
             Log::info("=== SMS Conversation Start ===");
         } else {
-            $action = $conversation->action;
-            $data = $conversation->data;
-            $userResponse = $body;
-
-            $conversationResponse = $this->smsConversationService->controlConversations($conversation, $userResponse, $action, $data);
+            $conversationResponse = $this->smsConversationService->controlConversations($conversation, $body);
 
             $message = $conversationResponse['message'] ?? "Sorry, we couldn't process your response.";
 
@@ -58,7 +63,7 @@ class SmsController extends Controller
             ];
         }
 
-        // Expected format: command listing attributes
+        // Expected format: command action attributes
         // example: make listing tomatoes 100kg 20php Laguna listed by Juan
         $words = explode(' ', $body);
         $tokens = [
@@ -66,8 +71,15 @@ class SmsController extends Controller
             'attributes' => array_slice($words, 2) ?? null,
         ];
 
+        if (str_contains($body, 'transactionrequest')) {
+            $transactionRequestResponse = $this->smsTransactionRequestService->controlTransactionRequests($from, $tokens['command'], $tokens['attributes']);
 
-        if (
+            $response = [
+                'success' => $transactionRequestResponse['success'],
+                'message' => $transactionRequestResponse['message'] ?? "Sorry, we couldn't process your request.",
+            ];
+
+        } elseif (
             str_contains($body, 'listing') ||
             str_contains($body, 'listings') ||
             str_contains($body, 'listingid')
@@ -78,22 +90,30 @@ class SmsController extends Controller
                 Log::error("=== SMS Conversation End ===");
             }
 
-            $message = $listingResponse['message'] ?? "Sorry, we couldn't process your request. Please check your command format and try again.";
-
             $response = [
                 'success' => $listingResponse['success'],
-                'message' => $message,
+                'message' => $message = $listingResponse['message'] ?? "Sorry, we couldn't process your request.",
             ];
+
         }
 
         $reply = new MessagingResponse();
-        $reply->message($message);
-        foreach (explode("\n", $message) as $line) {
+        $reply->message($response['message'] ?? "Sorry, we couldn't process your request.");
+
+        if ($response['message'] === "Invalid request.") {
+            Log::info("user: $body");
+
+        }
+
+        foreach (explode("\n", $response['message'] ?? "") as $line) {
             Log::info("Eden: $line");
+
         }
         if (is_bool($response['success'])) {
             Log::info("=== SMS Conversation End ===");
+
         }
+
         return response($reply)->header('Content-Type', 'text/xml');
     }
 }
