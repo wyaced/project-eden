@@ -20,6 +20,7 @@ import {
 } from "recharts";
 
 import api from "@/lib/axios";
+import Navbar from "@/components/navbar";
 
 interface MarketData {
   day: string;
@@ -45,7 +46,16 @@ export default function Welcome() {
   }, []);
 
   return (
-    <Grid container spacing={3}>
+    <div>
+      <Navbar />
+      <nav> 
+        <Typography variant="h4" gutterBottom>
+          Welcome to Eden Market Dashboard Test
+        </Typography>
+
+      </nav>
+
+   <Grid container spacing={3}>
 
       {/* MUI CARD */}
       <Grid size={{ xs: 12 }}>
@@ -90,6 +100,7 @@ export default function Welcome() {
         </Card>
       </Grid>
 
-    </Grid>
+    </Grid> 
+    </div>
   );
 }
