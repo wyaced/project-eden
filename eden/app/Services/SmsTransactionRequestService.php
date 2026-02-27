@@ -134,7 +134,7 @@ class SmsTransactionRequestService
         $strAttributes = $this->strAttributes;
 
         Log::info("----------------------------");
-        Log::info("user: $command TransactionRequest $strAttributes");
+        Log::info("user: $command TransactionRequests $strAttributes");
         Log::info("----------------------------");
 
         $showRequest = $this->parseShowCommand($attributes);
