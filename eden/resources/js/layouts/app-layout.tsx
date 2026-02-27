@@ -1,16 +1,14 @@
-import { Outlet } from "react-router-dom";
-import AppHeaderLayout from "./app/app-header-layout";
-import AppSidebarLayout from "./app/app-sidebar-layout";
+import { Link } from '@mui/material';
+import { Outlet } from 'react-router-dom';
 
 export default function AppLayout() {
     return (
-        <AppHeaderLayout>
-            <AppSidebarLayout>
-                <div>
-                    <h1>Layout Working</h1>
-                    <Outlet />
-                </div>
-            </AppSidebarLayout>
-        </AppHeaderLayout>
+        <div>
+            <nav className="flex gap-2 p-2">
+                <Link href='/' underline='hover'>Home</Link>
+                <Link href='/dashboard' underline='hover'>Dashboard</Link>
+            </nav>
+            <Outlet />
+        </div>
     );
 }
