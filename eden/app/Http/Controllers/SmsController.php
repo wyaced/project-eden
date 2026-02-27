@@ -6,6 +6,7 @@ use App\Models\SmsConversation;
 use App\Services\ProduceService;
 use App\Services\SmsConversationService;
 use App\Services\SmsListingService;
+use App\Services\SmsOngoingTransactionService;
 use App\Services\SmsTransactionRequestService;
 use App\Services\TwilioService;
 use Illuminate\Http\Request;
@@ -16,21 +17,24 @@ class SmsController extends Controller
 {
     protected $twilio;
     protected $produceService;
-    protected $smsListingService;
     protected $smsConversationService;
+    protected $smsListingService;
+    protected $smsOngoingTransactionService;
     protected $smsTransactionRequestService;
 
     public function __construct(
         TwilioService $twilio,
         ProduceService $produceService,
-        SmsListingService $smsListingService,
         SmsConversationService $smsConversationService,
+        SmsListingService $smsListingService,
+        SmsOngoingTransactionService $smsOngoingTransactionService,
         SmsTransactionRequestService $smsTransactionRequestService
     ) {
         $this->twilio = $twilio;
         $this->produceService = $produceService;
-        $this->smsListingService = $smsListingService;
         $this->smsConversationService = $smsConversationService;
+        $this->smsListingService = $smsListingService;
+        $this->smsOngoingTransactionService = $smsOngoingTransactionService;
         $this->smsTransactionRequestService = $smsTransactionRequestService;
     }
 
@@ -77,10 +81,30 @@ class SmsController extends Controller
             str_contains($body, 'transactionrequestid')
         ) {
             $transactionRequestResponse = $this->smsTransactionRequestService->controlTransactionRequests($from, $tokens['command'], $tokens['attributes']);
+            if (!$transactionRequestResponse['success'] || $transactionRequestResponse['success'] != 'pending') {
+                Log::error("Eden: Failed to process command for farmer $from");
+                Log::error("=== SMS Conversation End ===");
+            }
 
             $response = [
                 'success' => $transactionRequestResponse['success'],
                 'message' => $transactionRequestResponse['message'] ?? "Sorry, we couldn't process your request.",
+            ];
+
+        } elseif (
+            str_contains($body, 'ongoingtransaction') ||
+            str_contains($body, 'ongoingtransactions') ||
+            str_contains($body, 'ongoingtransactionid')
+        ) {
+            $ongoingTransactionResponse = $this->smsOngoingTransactionService->controlOngoingTransactions($from, $tokens['command'], $tokens['attributes']);
+            if (!$ongoingTransactionResponse['success'] || $ongoingTransactionResponse['success'] != 'pending') {
+                Log::error("Eden: Failed to process command for farmer $from");
+                Log::error("=== SMS Conversation End ===");
+            }
+
+            $response = [
+                'success' => $ongoingTransactionResponse['success'],
+                'message' => $ongoingTransactionResponse['message'] ?? "Sorry, we couldn't process your request.",
             ];
 
         } elseif (

@@ -13,12 +13,14 @@ use Illuminate\Support\Facades\Log;
 
 class SmsConversationService
 {
+    protected $ongoingTransactionService;
     protected $produceService;
     protected $transactionRequestService;
     protected $twilio;
 
-    public function __construct(ProduceService $produceService, TransactionRequestService $transactionRequestService, TwilioService $twilio)
+    public function __construct(OngoingTransactionService $ongoingTransactionService, ProduceService $produceService, TransactionRequestService $transactionRequestService, TwilioService $twilio)
     {
+        $this->ongoingTransactionService = $ongoingTransactionService;
         $this->produceService = $produceService;
         $this->transactionRequestService = $transactionRequestService;
         $this->twilio = $twilio;
@@ -277,6 +279,120 @@ class SmsConversationService
         ];
     }
 
+    protected function closeOngoingTransactionConversation(String $userResponse, array $data)
+    {
+        $ongoingTransactionId = $data['ongoing_transaction_id'] ?? null;
+
+        if ($userResponse === 'yes') {
+
+            if (is_null($ongoingTransactionId)) {
+                return [
+                    'success' => false,
+                    'message' => "Ongoing Transaction data not found. Please try again.",
+                ];
+            }
+
+            $ongoingTransaction  = OngoingTransactions::find($ongoingTransactionId);
+
+            if (is_null($ongoingTransaction)) {
+                return [
+                    'success' => false,
+                    'message' => "Ongoing Transaction with ID {$ongoingTransactionId} not found.",
+                ];
+            }
+
+            $response = $this->ongoingTransactionService->closeOngoingTransaction($ongoingTransactionId);
+
+            if ($response['success']) {
+                $listing = ProduceListing::find($ongoingTransaction->listing_id);
+                $messageToBuyer = <<<EOT
+                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity} of {$listing->produce} with {$ongoingTransaction->to} has been closed!
+                Farmer Contact: {$ongoingTransaction->to} ({$ongoingTransaction->to_phone})
+                EOT;
+
+                Log::info("=== (Eden's Notif to Buyer Start) ===");
+                foreach (explode("\n", $messageToBuyer) as $line) {
+                    Log::info("Eden to Buyer: $line");
+                }
+                Log::info("=== (Eden's Notif to Buyer End) ===");
+
+                $this->twilio->sendSms($ongoingTransaction->from_phone, $messageToBuyer);
+            }
+
+            return $response;
+        } elseif ($userResponse === 'no') {
+            $message = "Closing of OngoingTransactionID {$ongoingTransactionId} cancelled.";
+        } else {
+            $message = "Invalid response. Please reply with 'yes' or 'no'.";
+            return [
+                'success' => false,
+                'message' => $message,
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => $message,
+        ];
+    }
+
+    protected function cancelOngoingTransactionConversation(String $userResponse, array $data)
+    {
+        $ongoingTransactionId = $data['ongoing_transaction_id'] ?? null;
+
+        if ($userResponse === 'yes') {
+
+            if (is_null($ongoingTransactionId)) {
+                return [
+                    'success' => false,
+                    'message' => "Ongoing Transaction data not found. Please try again.",
+                ];
+            }
+
+            $ongoingTransaction  = OngoingTransactions::find($ongoingTransactionId);
+
+            if (is_null($ongoingTransaction)) {
+                return [
+                    'success' => false,
+                    'message' => "Ongoing Transaction with ID {$ongoingTransactionId} not found.",
+                ];
+            }
+
+            $response = $this->ongoingTransactionService->cancelOngoingTransaction($ongoingTransactionId);
+
+            if ($response['success']) {
+                $listing = ProduceListing::find($ongoingTransaction->listing_id);
+                $messageToBuyer = <<<EOT
+                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity} of {$listing->produce} with {$ongoingTransaction->to} has been canceled.
+                Farmer Contact: {$ongoingTransaction->to} ({$ongoingTransaction->to_phone})
+                EOT;
+
+                Log::info("=== (Eden's Notif to Buyer Start) ===");
+                foreach (explode("\n", $messageToBuyer) as $line) {
+                    Log::info("Eden to Buyer: $line");
+                }
+                Log::info("=== (Eden's Notif to Buyer End) ===");
+
+                $this->twilio->sendSms($ongoingTransaction->from_phone, $messageToBuyer);
+            }
+
+            return $response;
+        } elseif ($userResponse === 'no') {
+            $message = "Cancellation of OngoingTransactionID {$ongoingTransactionId} cancelled.";
+        } else {
+            $message = "Invalid response. Please reply with 'yes' or 'no'.";
+            return [
+                'success' => false,
+                'message' => $message,
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => $message,
+        ];
+    }
+
     public function controlConversations(SmsConversation $conversation, String $userResponse)
     {
         $action = $conversation->action;
@@ -304,6 +420,14 @@ class SmsConversationService
 
         if ($action === 'reject_transaction_request') {
             $conversationResponse = $this->rejectTransactionRequestConversation($userResponse, $data);
+        }
+
+        if ($action === 'close_ongoing_transaction') {
+            $conversationResponse = $this->closeOngoingTransactionConversation($userResponse, $data);
+        }
+
+        if ($action === 'cancel_ongoing_transaction') {
+            $conversationResponse = $this->cancelOngoingTransactionConversation($userResponse, $data);
         }
 
         if ($conversationResponse['success']) {

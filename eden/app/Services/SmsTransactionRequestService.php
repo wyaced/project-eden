@@ -360,7 +360,7 @@ class SmsTransactionRequestService
         }
 
         if ($command === 'show') {
-            // Expected format for atrributes: for <for_farmer_name: nullable> from <from_farmer_name: nullable> || <transaction_request_id>
+            // Expected format for atrributes: for <to_farmer_name: nullable> from <from_farmer_name: nullable> || <transaction_request_id>
             // example: for Juan from Pedro
             // example: for Juan
             // example: from Pedro
