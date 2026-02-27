@@ -44,52 +44,36 @@ export default function Welcome() {
       });
   }, []);
 
-  return (
-    <Grid container spacing={3}>
+return (
+  <Grid container spacing={0}>
+   
+      <Card sx={{ borderRadius: 0 }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Eden Market Dashboard Test
+          </Typography>
 
-      {/* MUI CARD */}
-      <Grid size={{ xs: 12 }}>
-        <Card>
-          <CardContent>
-
-            <Typography variant="h5" gutterBottom>
-              Eden Market Dashboard Test
-            </Typography>
-
-            {loading ? (
-
-              <CircularProgress />
-
-            ) : (
-
-              <ResponsiveContainer width="100%" height={300}>
-
-                {/* RECHARTS GRAPH */}
-                <LineChart data={data}>
-
-                  <XAxis dataKey="day" />
-
-                  <YAxis />
-
-                  <Tooltip />
-
-                  <Line
-                    type="monotone"
-                    dataKey="price"
-                    stroke="#2e7d32"
-                    strokeWidth={3}
-                  />
-
-                </LineChart>
-
-              </ResponsiveContainer>
-
-            )}
-
-          </CardContent>
-        </Card>
-      </Grid>
-
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data}>
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#2e7d32"
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
     </Grid>
-  );
+
+);
+
 }
