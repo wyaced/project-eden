@@ -12,7 +12,7 @@ class ProduceService
         return ['success' => $produceListing->save(), 'listing' => $produceListing];
     }
 
-    public function showListings(array $showRequest)
+    public function showListings(array $showRequest, String $orderDirection = 'asc')
     {
         $query = ProduceListing::query();
 
@@ -28,7 +28,7 @@ class ProduceService
             $query->where('location', 'like', '%' . $showRequest['location'] . '%');
         }
 
-        return $query->get();
+        return $query->orderBy('price_per_unit', $orderDirection)->get();
     }
 
     public function updateListing(ProduceListing $produceListing, array $updateRequest)

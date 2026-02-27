@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\ProduceListing;
 use App\Models\TransactionRequests;
 
 class TransactionRequestService
@@ -13,7 +12,7 @@ class TransactionRequestService
         return ['success' => $transactionRequest->save(), 'transactionRequest' => $transactionRequest];
     }
 
-    public function showTransactionRequests(array $showRequest)
+    public function showTransactionRequests(array $showRequest, String $orderDirection = 'asc')
     {
         $query = TransactionRequests::query();
 
@@ -31,19 +30,21 @@ class TransactionRequestService
 
         return $query->where('status', 'accepted')
             ->orwhere('status', 'pending')
-            ->orWhere('status', 'rejected')->get();
+            ->orWhere('status', 'rejected')
+            ->whereNotNull('listing_id')
+            ->orderBy('updated_at', $orderDirection)->get();
     }
 
     public function cancelTransactionRequest($transactionRequestId)
     {
         $transactionRequest = TransactionRequests::find($transactionRequestId);
 
-         if (is_null($transactionRequest)) {
-             return [
-                 'success' => false,
-                 'message' => "Invalid request/Transaction Request ID. Please try again.",
-             ];
-         }
+        if (is_null($transactionRequest)) {
+            return [
+                'success' => false,
+                'message' => "Invalid request/Transaction Request ID. Please try again.",
+            ];
+        }
 
         $transactionRequest->update(['status' => 'cancelled']);
 
@@ -55,12 +56,12 @@ class TransactionRequestService
     {
         $transactionRequest = TransactionRequests::find($transactionRequestId);
 
-         if (is_null($transactionRequest)) {
-             return [
-                 'success' => false,
-                 'message' => "Invalid request/Transaction Request ID. Please try again.",
-             ];
-         }
+        if (is_null($transactionRequest)) {
+            return [
+                'success' => false,
+                'message' => "Invalid request/Transaction Request ID. Please try again.",
+            ];
+        }
 
         $transactionRequest->update(['status' => 'accepted']);
 
@@ -72,12 +73,12 @@ class TransactionRequestService
     {
         $transactionRequest = TransactionRequests::find($transactionRequestId);
 
-         if (is_null($transactionRequest)) {
-             return [
-                 'success' => false,
-                 'message' => "Invalid request/Transaction Request ID. Please try again.",
-             ];
-         }
+        if (is_null($transactionRequest)) {
+            return [
+                'success' => false,
+                'message' => "Invalid request/Transaction Request ID. Please try again.",
+            ];
+        }
 
         $transactionRequest->update(['status' => 'rejected']);
 
