@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\MarketMovement;
 use App\Services\MarketMovementsService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
-
-use function PHPSTORM_META\type;
 
 class MarketMovementController extends Controller
 {
@@ -20,6 +19,7 @@ class MarketMovementController extends Controller
 
     public function getMarketMovementRecords(String $type, String $produce, ?String $location = null)
     {
+        if ($location === "all") $location = null;
         if ($type === 'price') {
             $response = $this->marketMovementService->getPriceMovementRecords($produce, $location);
         }

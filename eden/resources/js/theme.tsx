@@ -3,8 +3,7 @@ import { createTheme } from '@mui/material/styles';
 const edenTheme = createTheme({
     palette: {
         background: {
-            default: '#2e6a30',
-            paper: '#c7c9e1',
+            default: '#255527',
         },
         primary: {
             light: '#5d945f',

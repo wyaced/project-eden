@@ -181,16 +181,6 @@ class SmsConversationService
             $response = $this->transactionRequestService->acceptTransactionRequest($transactionRequestId);
 
             if ($response['success']) {
-                OngoingTransactions::create([
-                    'from' => $transactionRequest->from,
-                    'from_phone' => $transactionRequest->from_phone,
-                    'to' => $transactionRequest->to,
-                    'to_phone' => $transactionRequest->to_phone,
-                    'listing_id' => $transactionRequest->listing_id,
-                    'unit_quantity' => $transactionRequest->unit_quantity,
-                    'status' => 'ongoing',
-                ]);
-
                 $listing = ProduceListing::find($transactionRequest->listing_id);
                 $messageToBuyer = <<<EOT
                 Your TransactionRequestID {$transactionRequestId} for {$transactionRequest->unit_quantity}{$listing->unit} of {$listing->produce} has been accepted by {$transactionRequest->to}!

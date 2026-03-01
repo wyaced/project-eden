@@ -11,9 +11,15 @@ class MarketMovementsService
 {
     public function getSupplyMovementRecords(String $produce, ?String $location = null)
     {
-        $records = MarketMovement::where('produce', $produce)
-            ->orderBy('created_at')
-            ->get();
+        $query = MarketMovement::query();
+
+        $query->where('produce', $produce);
+
+        if(!is_null($location)) {
+            $query->where('location', $location);
+        }
+
+        $records = $query->orderBy('created_at')->get();
 
         $timeGroups = [];
 
@@ -42,9 +48,15 @@ class MarketMovementsService
 
     public function getPriceMovementRecords(String $produce, ?String $location = null)
     {
-        $records = MarketMovement::where('produce', $produce)
-            ->orderBy('created_at')
-            ->get();
+        $query = MarketMovement::query();
+
+        $query->where('produce', $produce);
+
+        if(!is_null($location)) {
+            $query->where('location', $location);
+        }
+
+        $records = $query->orderBy('created_at')->get();
 
         $timeGroups = [];
 

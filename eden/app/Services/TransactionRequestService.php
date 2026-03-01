@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\OngoingTransactions;
 use App\Models\TransactionRequests;
 
 class TransactionRequestService
@@ -62,6 +63,16 @@ class TransactionRequestService
                 'message' => "Invalid request/Transaction Request ID. Please try again.",
             ];
         }
+
+        OngoingTransactions::create([
+            'from' => $transactionRequest->from,
+            'from_phone' => $transactionRequest->from_phone,
+            'to' => $transactionRequest->to,
+            'to_phone' => $transactionRequest->to_phone,
+            'listing_id' => $transactionRequest->listing_id,
+            'unit_quantity' => $transactionRequest->unit_quantity,
+            'status' => 'ongoing',
+        ]);
 
         $transactionRequest->update(['status' => 'accepted']);
 

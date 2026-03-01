@@ -12,11 +12,33 @@ class ProduceService
         return ['success' => $produceListing->save(), 'listing' => $produceListing];
     }
 
+    public function getProduceNames()
+    {
+        $listings = ProduceListing::select('produce')->distinct()->get();
+        $names = [];
+        foreach($listings as $listing) {
+            $names[] = $listing->produce;
+        }
+
+        return $names;
+    }
+
+    public function getLocations()
+    {
+        $listings = ProduceListing::select('location')->distinct()->get();
+        $names = [];
+        foreach($listings as $listing) {
+            $names[] = $listing->location;
+        }
+
+        return $names;
+    }
+
     public function showListings(array $showRequest, String $orderDirection = 'asc')
     {
         $query = ProduceListing::query();
 
-        if (!is_null($showRequest['produce'])) {
+        if (!is_null($showRequest['produce']) && $showRequest['produce'] != "all") {
             $query->where('produce', 'like', '%' . $showRequest['produce'] . '%');
         }
 
@@ -24,7 +46,7 @@ class ProduceService
             $query->where('farmer_name', 'like', '%' . $showRequest['farmer_name'] . '%');
         }
 
-        if (!is_null($showRequest['location'])) {
+        if (!is_null($showRequest['location']) && $showRequest['location'] != "all") {
             $query->where('location', 'like', '%' . $showRequest['location'] . '%');
         }
 
