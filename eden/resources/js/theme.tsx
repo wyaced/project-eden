@@ -4,7 +4,6 @@ const edenTheme = createTheme({
     palette: {
         background: {
             default: '#255527',
-            paper: '#c7c9e1',
         },
         primary: {
             light: '#5d945f',

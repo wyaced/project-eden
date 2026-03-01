@@ -12,6 +12,17 @@ class ProduceService
         return ['success' => $produceListing->save(), 'listing' => $produceListing];
     }
 
+    public function getProduceNames()
+    {
+        $listings = ProduceListing::select('produce')->distinct()->get();
+        $names = [];
+        foreach($listings as $listing) {
+            $names[] = $listing->produce;
+        }
+
+        return $names;
+    }
+
     public function showListings(array $showRequest, String $orderDirection = 'asc')
     {
         $query = ProduceListing::query();

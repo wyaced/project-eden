@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MarketMovementController;
+use App\Http\Controllers\Api\MarketMovementController;
 use App\Models\MarketMovement;
 use Illuminate\Support\Facades\Route;
 
