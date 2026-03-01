@@ -109,6 +109,8 @@ export default function DashboardTest() {
       });
   }, []);
 
+  console.log(data);
+
   return (
     <Grid container spacing={3}>
 

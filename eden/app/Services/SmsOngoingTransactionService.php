@@ -62,7 +62,7 @@ class SmsOngoingTransactionService
         $strAttributes = $this->strAttributes;
 
         Log::info("----------------------------");
-        Log::info("user: $command TransactionRequest $strAttributes");
+        Log::info("user: $command OngoingTransactions $strAttributes");
         Log::info("----------------------------");
 
         $showRequest = $this->parseShowCommand($attributes);

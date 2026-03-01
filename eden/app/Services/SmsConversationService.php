@@ -88,7 +88,7 @@ class SmsConversationService
             $messageToSeller = <<<EOT
             You have a new TransactionRequest (ID: {$transactionRequest->id}) for your listing of {$listing->produce}!
             From: {$transactionRequest->from}
-            Quantity: {$transactionRequest->unit_quantity} of {$listing->produce}
+            Quantity: {$transactionRequest->unit_quantity}{$listing->unit} of {$listing->produce}
             Price: PHP{$listing->price_per_unit} / {$listing->unit}
             EOT;
 
@@ -193,7 +193,7 @@ class SmsConversationService
 
                 $listing = ProduceListing::find($transactionRequest->listing_id);
                 $messageToBuyer = <<<EOT
-                Your TransactionRequestID {$transactionRequestId} for {$transactionRequest->unit_quantity} of {$listing->produce} has been accepted by {$transactionRequest->to}!
+                Your TransactionRequestID {$transactionRequestId} for {$transactionRequest->unit_quantity}{$listing->unit} of {$listing->produce} has been accepted by {$transactionRequest->to}!
                 Farmer Contact: {$transactionRequest->to} ({$transactionRequest->to_phone})
                 EOT;
 
@@ -250,7 +250,7 @@ class SmsConversationService
             if ($response['success']) {
                 $listing = ProduceListing::find($transactionRequest->listing_id);
                 $messageToBuyer = <<<EOT
-                Your TransactionRequestID {$transactionRequestId} for {$transactionRequest->unit_quantity} of {$listing->produce} has been rejected by {$transactionRequest->to}.
+                Your TransactionRequestID {$transactionRequestId} for {$transactionRequest->unit_quantity}{$listing->unit} of {$listing->produce} has been rejected by {$transactionRequest->to}.
                 EOT;
 
                 Log::info("=== (Eden's Notif to Buyer Start) ===");
@@ -306,7 +306,7 @@ class SmsConversationService
             if ($response['success']) {
                 $listing = ProduceListing::find($ongoingTransaction->listing_id);
                 $messageToBuyer = <<<EOT
-                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity} of {$listing->produce} with {$ongoingTransaction->to} has been closed!
+                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity}{$listing->unit} of {$listing->produce} with {$ongoingTransaction->to} has been closed!
                 Farmer Contact: {$ongoingTransaction->to} ({$ongoingTransaction->to_phone})
                 EOT;
 
@@ -363,7 +363,7 @@ class SmsConversationService
             if ($response['success']) {
                 $listing = ProduceListing::find($ongoingTransaction->listing_id);
                 $messageToBuyer = <<<EOT
-                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity} of {$listing->produce} with {$ongoingTransaction->to} has been canceled.
+                Your OngoingTransactionID {$ongoingTransactionId} for {$ongoingTransaction->unit_quantity}{$listing->unit} of {$listing->produce} with {$ongoingTransaction->to} has been canceled.
                 Farmer Contact: {$ongoingTransaction->to} ({$ongoingTransaction->to_phone})
                 EOT;
 

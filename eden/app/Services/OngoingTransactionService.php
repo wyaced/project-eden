@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\OngoingTransactions;
+use App\Models\ProduceListing;
 
 class OngoingTransactionService
 {
@@ -47,6 +48,14 @@ class OngoingTransactionService
                 'success' => false,
                 'message' => "Invalid request/Ongoing Transaction ID. Please try again.",
             ];
+        }
+
+        $listing = ProduceListing::find($ongoingTransaction->listing_id);
+
+        if ($listing->quantity < $ongoingTransaction->unit_quantity) {
+            $listing->update(['quantity' => 0]);
+        } else {
+            $listing->update(['quantity' => $listing->quantity - $ongoingTransaction->unit_quantity]);
         }
 
         $ongoingTransaction->update(['status' => 'closed']);

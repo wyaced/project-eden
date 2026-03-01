@@ -1,30 +1,4 @@
-// MUI
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  CircularProgress,
-} from "@mui/material";
-
-import { useEffect, useState } from "react";
-
-// Recharts
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-import api from "@/lib/axios";
-
-interface MarketData {
-  day: string;
-  price: number;
-}
+import { Typography } from '@mui/material';
 
 export default function Welcome() {
 
