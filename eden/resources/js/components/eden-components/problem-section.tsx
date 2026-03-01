@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
+import { useEffect } from 'react';
 
 export default function ProblemSection() {
     return (
@@ -6,7 +7,7 @@ export default function ProblemSection() {
             sx={{
                 py: 12,
                 px: { xs: 4, md: 10 },
-                backgroundColor: '#000',
+                background: "linear-gradient(180deg, #000000 70%, #255527 100%)",
                 color: '#fff',
             }}
         >
@@ -55,6 +56,19 @@ export default function ProblemSection() {
                         Many rural farmers lack high-speed internet, keeping them disconnected from real-time market needs.
                     </Typography>
                 </Box>
+            </Box>
+            <Box sx={{ mt: 6, textAlign: { xs: 'center', md: 'left' } }}>
+                <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                    Watch a related news video:{" "}
+                    <Link
+                        href="https://www.tiktok.com/@gmanews/video/7609893409398066453"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{ color: '#ffd700', fontWeight: 700 }}
+                    >
+                        TikTok Video
+                    </Link>
+                </Typography>
             </Box>
         </Box>
     );
