@@ -4,11 +4,11 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: eden_web_db
+    container_name: eden_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: eden_web
+      MYSQL_DATABASE: eden
       MYSQL_USER: edenuser
       MYSQL_PASSWORD: edenpass
     ports:
@@ -20,7 +20,7 @@ services:
     build:
       context: ./eden
       dockerfile: Dockerfile
-    container_name: eden_web_app
+    container_name: eden_app
     restart: always
     ports:
       - "8000:8000"
@@ -31,7 +31,7 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_DATABASE: eden_web
+      DB_DATABASE: eden
       DB_USERNAME: edenuser
       DB_PASSWORD: edenpass
 

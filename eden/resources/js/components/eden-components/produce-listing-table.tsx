@@ -29,15 +29,13 @@ export default function ProduceListingTable() {
         });
     }, []);
 
-    console.log('data start');
-    console.log(data);
-    console.log('data end');
-
     return (
         <TableContainer component={Paper}>
             <Table>
                 <TableHead>
-                    <TableRow>
+                    <TableRow
+                        sx={{ backgroundColor: "green" }}
+                    >
                         <TableCell>Produce</TableCell>
                         <TableCell>Stock</TableCell>
                         <TableCell>Price Per Unit</TableCell>

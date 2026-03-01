@@ -59,6 +59,10 @@ docker-compose up -d --build
 ```bash
 docker exec -it eden_app php artisan key:generate
 docker exec -it eden_app php artisan migrate
+# run db:seed a few times for sample data
+docker exec -it eden_app php artisan db:seed
+docker exec -it eden_app php artisan db:seed
+docker exec -it eden_app php artisan db:seed
 ```
 
 5. **Start dev server (inside container):**

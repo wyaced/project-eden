@@ -16,18 +16,18 @@ class ProduceListingFactory extends Factory
      */
     public function definition(): array
     {
-        $produceArr = ['bigas', 'talong', 'sitaw', 'upo', 'kalabasa', 'labanos', 'mustasa', 'sibuyas', 'kamatis', 'bawang', 'luya'];
+        $produceArr = ['bigas', 'talong', 'sitaw', 'upo', 'kalabasa', 'labanos', 'mustasa', 'sibuyas', 'kamatis', 'bawang', 'luya', 'kamote', 'patatas'];
         $locations = [
             // Region III - Central Luzon
-            "aurora",
-            "bataan",
-            "bulacan",
-            "nuevaecija",
-            "pampanga",
-            "tarlac",
-            "zambales",
-            "angelescity",
-            "olongapocity",
+            // "aurora",
+            // "bataan",
+            // "bulacan",
+            // "nuevaecija",
+            // "pampanga",
+            // "tarlac",
+            // "zambales",
+            // "angelescity",
+            // "olongapocity",
 
             // Region IV-A - CALABARZON
             "batangas",
@@ -38,32 +38,32 @@ class ProduceListingFactory extends Factory
             "lucenacity",
 
             // Region V - Bicol Region
-            "albay",
-            "camarinesnorte",
-            "camarinessur",
-            "catanduanes",
-            "masbate",
-            "sorsogon",
-            "nagacity",
+            // "albay",
+            // "camarinesnorte",
+            // "camarinessur",
+            // "catanduanes",
+            // "masbate",
+            // "sorsogon",
+            // "nagacity",
 
-            // NCR - National Capital Region
-            "manila",
-            "caloocan",
-            "laspiñas",
-            "makati",
-            "malabon",
-            "mandaluyong",
-            "marikina",
-            "muntinlupa",
-            "navotas",
-            "parañaque",
-            "pasay",
-            "pasig",
-            "quezoncity",
-            "sanjuan",
-            "taguig",
-            "valenzuela",
-            "pateros"
+            // // NCR - National Capital Region
+            // "manila",
+            // "caloocan",
+            // "laspiñas",
+            // "makati",
+            // "malabon",
+            // "mandaluyong",
+            // "marikina",
+            // "muntinlupa",
+            // "navotas",
+            // "parañaque",
+            // "pasay",
+            // "pasig",
+            // "quezoncity",
+            // "sanjuan",
+            // "taguig",
+            // "valenzuela",
+            // "pateros"
         ];
 
         return [

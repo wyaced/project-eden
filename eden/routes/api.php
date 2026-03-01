@@ -19,3 +19,4 @@ Route::get('/market-test', function () {
 
 require __DIR__.'/api/sms.php';
 require __DIR__.'/api/produce.php';
+require __DIR__.'/api/market-movement.php';
