@@ -5,10 +5,10 @@ export default function AppLayout() {
     return (
         <div>
             <NavBar pages={[
-                    ['Home', '/'],
-                    ['Listings', '/listings'],
-                    ['Dashboard', '/dashboard'],
-                ]}
+                ['Home', '/'],
+                ['Listings', '/listings'],
+                ['DashboardTest', '/dashboard'],
+            ]}
             />
             <Outlet />
         </div>

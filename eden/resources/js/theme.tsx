@@ -18,6 +18,17 @@ const edenTheme = createTheme({
             contrastText: '#000',
         },
     },
+    typography: {
+        fontFamily: "'Inter', sans-serif",
+
+        h1: {
+            fontFamily: "'Helvetica', sans-serif",
+        },
+
+        h4: {
+            fontFamily: "'monospace', sans-serif",
+        },
+    },
 });
 
 export default edenTheme;
